@@ -55,6 +55,7 @@ spawner = NodePath("../Spawner")
 zoom = Vector2(5, 5)
 script = ExtResource("3_naq5x")
 target = NodePath("../Player")
+lerp_speed = null
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 

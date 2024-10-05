@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b36np0a0xdjv8"
-path="res://.godot/imported/Beanel.png-2e7ca529bf7ee1a8098b7460e92ccb7b.ctex"
+uid="uid://6j0t7qfeexim"
+path="res://.godot/imported/EggShadow.png-4022c0a55228b19bd4e9d34b80275a58.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Beanel.png"
-dest_files=["res://.godot/imported/Beanel.png-2e7ca529bf7ee1a8098b7460e92ccb7b.ctex"]
+source_file="res://EggShadow.png"
+dest_files=["res://.godot/imported/EggShadow.png-4022c0a55228b19bd4e9d34b80275a58.ctex"]
 
 [params]
 

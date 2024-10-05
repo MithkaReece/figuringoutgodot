@@ -1,0 +1,36 @@
+[gd_scene load_steps=2 format=3 uid="uid://dscdd041k6x4v"]
+
+[ext_resource type="Script" path="res://EggMenu.gd" id="1_pg4dh"]
+
+[node name="Control" type="Control"]
+texture_filter = 2
+layout_mode = 3
+anchors_preset = 0
+offset_top = -26.0
+offset_right = 40.0
+offset_bottom = 14.0
+scale = Vector2(0.524614, 0.524614)
+script = ExtResource("1_pg4dh")
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_left = -13.0
+offset_top = -54.0
+offset_right = 27.0
+offset_bottom = -31.0
+text = "Egg"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 0
+offset_left = -34.0
+offset_top = -29.0
+offset_right = 79.0
+offset_bottom = 37.0
+
+[node name="IncubateButton" type="Button" parent="HBoxContainer"]
+layout_mode = 2
+text = "Get"
+
+[node name="EatButton" type="Button" parent="HBoxContainer"]
+layout_mode = 2
+text = "Eat"

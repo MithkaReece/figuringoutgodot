@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dnobl46qikv2n"
-path="res://.godot/imported/Shell.png-eeb92a7feb97864c27397162b06e4d19.ctex"
+uid="uid://gxfxq8kwh537"
+path="res://.godot/imported/Sand2.png-ece1cf420bfe58e426563a52012cc584.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Shell.png"
-dest_files=["res://.godot/imported/Shell.png-eeb92a7feb97864c27397162b06e4d19.ctex"]
+source_file="res://Sand2.png"
+dest_files=["res://.godot/imported/Sand2.png-ece1cf420bfe58e426563a52012cc584.ctex"]
 
 [params]
 

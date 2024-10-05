@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://dpiojy5kjex73"]
+
+[ext_resource type="Texture2D" uid="uid://bdgyxmdmnk47d" path="res://Egg.png" id="1_alh6d"]
+
+[node name="EggSprite" type="Sprite2D"]
+texture = ExtResource("1_alh6d")
