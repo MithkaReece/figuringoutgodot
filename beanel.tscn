@@ -1,0 +1,25 @@
+[gd_scene load_steps=4 format=3 uid="uid://cfv4v3masclnu"]
+
+[ext_resource type="Texture2D" uid="uid://b36np0a0xdjv8" path="res://Beanel.png" id="1_n6qla"]
+[ext_resource type="Script" path="res://beanel.gd" id="1_n7tkg"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_sumi2"]
+radius = 4.0
+height = 18.0
+
+[node name="Beanel" type="Node2D"]
+
+[node name="CharacterBody2D" type="CharacterBody2D" parent="."]
+position = Vector2(-27, -7)
+script = ExtResource("1_n7tkg")
+speed = 10.0
+movement_radius = 20.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D"]
+position = Vector2(0, -0.5)
+rotation = 1.5708
+shape = SubResource("CapsuleShape2D_sumi2")
+
+[node name="Sprite2D" type="Sprite2D" parent="CharacterBody2D"]
+position = Vector2(0, 1)
+texture = ExtResource("1_n6qla")

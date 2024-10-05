@@ -1,0 +1,30 @@
+[gd_scene load_steps=5 format=3 uid="uid://crijalpif0wx4"]
+
+[ext_resource type="PackedScene" uid="uid://dhdwgwhqmb84i" path="res://Player.tscn" id="1_v4blh"]
+[ext_resource type="PackedScene" uid="uid://big3dhb885two" path="res://shell.tscn" id="2_yofko"]
+[ext_resource type="Script" path="res://CameraFollow.gd" id="3_naq5x"]
+[ext_resource type="PackedScene" uid="uid://cfv4v3masclnu" path="res://beanel.tscn" id="4_5hb7i"]
+
+[node name="Main" type="Node2D"]
+position = Vector2(1, 1)
+
+[node name="CharacterBody2D" parent="." instance=ExtResource("1_v4blh")]
+position = Vector2(3, 1)
+
+[node name="Shell" parent="." instance=ExtResource("2_yofko")]
+position = Vector2(22, 3)
+scale = Vector2(0.958, 1)
+
+[node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(5, 5)
+script = ExtResource("3_naq5x")
+target = NodePath("../CharacterBody2D")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="ScoreLabel" type="Label" parent="CanvasLayer"]
+offset_right = 56.0
+offset_bottom = 23.0
+text = "teetstd"
+
+[node name="Beanel" parent="." instance=ExtResource("4_5hb7i")]
