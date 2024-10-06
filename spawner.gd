@@ -22,7 +22,7 @@ var score = 0
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	pass
+	SignalManager.egg_pickup.connect(_on_egg_pickup)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
@@ -38,23 +38,23 @@ func _process(delta: float) -> void:
 		spawn_egg()
 
 func spawn_creature():
-	var beanel = creatureScene.instantiate()
-	get_tree().root.add_child(beanel)
+	var creature = creatureScene.instantiate()
+	get_tree().root.add_child(creature)
 	
-	beanel.position = random_spawn_point()
+	creature.position = random_spawn_point()
 
-	beanel.connect("creature_died", _on_creature_died)
-	beanel.player = player
-	beanel.spawner = self 
-	beanel.SetType(creatureTypes[randi_range(0, creatureTypes.size() - 1)])
-	
-	creatures.append(beanel)
+	creature.connect("creature_died", _on_creature_died)
+	creature.player = player
+	creature.spawner = self 
+	creature.SetType(creatureTypes[randi_range(0, creatureTypes.size() - 1)])
+	creature.maxHealth += 3 * player.creatures.size() * player.creatures.size()
+	creature.health = creature.maxHealth
+	creatures.append(creature)
 
 
 func spawn_egg():
 	var egg = egg_scene.instantiate()
 	egg.position = random_spawn_point()
-	SignalManager.egg_pickup.connect(_on_egg_pickup)
 	
 	get_tree().root.add_child(egg)
 	eggs.append(egg)
@@ -96,4 +96,4 @@ func Clear():
 	
 func AddScore(value):
 	score += value
-	score_label.text = str(score)
+	score_label.text = str(int(score))

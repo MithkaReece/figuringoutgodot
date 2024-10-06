@@ -1,4 +1,15 @@
 extends CharacterBody2D
+@onready var _1: Sprite2D = $"../CanvasLayer/Control/CreatureBar/1"
+@onready var _2: Sprite2D = $"../CanvasLayer/Control/CreatureBar/2"
+@onready var _3: Sprite2D = $"../CanvasLayer/Control/CreatureBar/3"
+@onready var _4: Sprite2D = $"../CanvasLayer/Control/CreatureBar/4"
+@onready var _5: Sprite2D = $"../CanvasLayer/Control/CreatureBar/5"
+@onready var _6: Sprite2D = $"../CanvasLayer/Control/CreatureBar/6"
+@onready var _7: Sprite2D = $"../CanvasLayer/Control/CreatureBar/7"
+@onready var _8: Sprite2D = $"../CanvasLayer/Control/CreatureBar/8"
+@onready var _9: Sprite2D = $"../CanvasLayer/Control/CreatureBar/9"
+@onready var _10: Sprite2D = $"../CanvasLayer/Control/CreatureBar/10"
+
 
 @onready var spawner: Node2D = $"../Spawner"
 
@@ -31,8 +42,6 @@ var path = []
 var carryingEggType = null
 var carryingEggTimer = null
 
-
-
 var creatureScene = preload("res://beanel.tscn")
 
 var creatures = []
@@ -40,7 +49,14 @@ var creatures = []
 var fireballCoolDown = 0.15
 var timeTillFireball = 0.0
 
+var regenCooldown = 0.5
+var timeTillRegen = 0.0
+
+var healthGainMult = 1.0
+
 func _ready() -> void:
+	SignalManager.friendly_creature_died.connect(_on_friendly_death)
+	
 	carryingEggType = null
 	egg_sprite = null
 	self.add_to_group("Player")
@@ -49,12 +65,69 @@ func _ready() -> void:
 	health_bar.get_node("TextureProgressBar").texture_progress = friendlyHealthBarTexture
 
 func _process(delta: float) -> void:
+	_update_creature_bar()
 	health_bar.get_node("TextureProgressBar").value = (health/maxHealth) * health_bar.get_node("TextureProgressBar").max_value
+	if timeTillRegen > 0:
+		timeTillRegen -= delta
+	else:
+		health += delta
+		if health > maxHealth:
+			health = maxHealth
+	
+	if spawner.score != score:
+		var diff = (spawner.score - score) * healthGainMult
+		score = spawner.score
+		for creature in creatures:
+			creature.maxHealth += diff
+			creature.health += diff
+			
 	
 	if timeTillFireball >= 0.0:
 		timeTillFireball -= delta
 	handlePath()
 	handleEgg(delta)
+
+func _update_creature_bar():
+	if 0 < creatures.size():
+		_1.texture = creatures[0].get_node("Sprite2D").texture
+	else:
+		_1.texture = null
+	if 1 < creatures.size():
+		_2.texture = creatures[1].get_node("Sprite2D").texture
+	else:
+		_2.texture = null
+	if 2 < creatures.size():
+		_3.texture = creatures[2].get_node("Sprite2D").texture
+	else:
+		_3.texture = null
+	if 3 < creatures.size():
+		_4.texture = creatures[3].get_node("Sprite2D").texture
+	else:
+		_4.texture = null
+	if 4 < creatures.size():
+		_5.texture = creatures[4].get_node("Sprite2D").texture
+	else:
+		_5.texture = null
+	if 5 < creatures.size():
+		_6.texture = creatures[5].get_node("Sprite2D").texture
+	else:
+		_6.texture = null
+	if 6 < creatures.size():
+		_7.texture = creatures[6].get_node("Sprite2D").texture
+	else:
+		_7.texture = null
+	if 7 < creatures.size():
+		_8.texture = creatures[7].get_node("Sprite2D").texture
+	else:
+		_8.texture = null
+	if 8 < creatures.size():
+		_9.texture = creatures[8].get_node("Sprite2D").texture
+	else:
+		_9.texture = null
+	if 9 < creatures.size():
+		_10.texture = creatures[9].get_node("Sprite2D").texture
+	else:
+		_10.texture = null
 
 func _input(event):
 	if event is InputEventMouseButton and event.pressed && event.button_index == MOUSE_BUTTON_LEFT && timeTillFireball <= 0.0:
@@ -92,7 +165,7 @@ func _physics_process(delta: float) -> void:
 		if other is StaticBody2D and other.is_in_group("Egg"):
 			SignalManager.egg_pickup.emit(other)
 			if carryingEggType:
-				print("Eat")
+				spawner.AddScore(0.1*spawner.score)
 			else:
 				carryingEggType = other.type
 				carryingEggTimer = other.timeLeftToIncubate
@@ -133,8 +206,10 @@ func spawnFromEgg():
 	creatures.append(creature)
 	creature._set_friendly()
 	creature.player = self
-	creature.spawner = self
+	creature.spawner = spawner
 	creature.SetType(carryingEggType)
+	creature.maxHealth += score * healthGainMult
+	creature.health = creature.maxHealth
 	
 	carryingEggType = null
 	carryingEggTimer = null
@@ -151,10 +226,16 @@ func dropEgg():
 
 func Damage(amount):
 	health -= amount
+	timeTillRegen = regenCooldown
 	if health <= 0:
 		if egg_sprite:
 			egg_sprite.queue_free()
 		for creature in creatures:
 			creature.queue_free()
 		spawner.Clear()
+		carryingEggType = null
 		get_tree().reload_current_scene()
+
+func _on_friendly_death(creature):
+	creatures.erase(creature)
+	creature.queue_free()

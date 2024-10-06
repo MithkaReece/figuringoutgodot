@@ -1,7 +1,7 @@
 extends CharacterBody2D
 signal creature_died
 
-const maxHealth = 100
+var maxHealth = 100
 var health: float = maxHealth
 
 var friendlyHealthBarTexture: Texture2D = preload("res://ProgressBarFullFriendly.png")
@@ -15,7 +15,6 @@ var movement_radius: float = 50.0
 var min_wait_time: float = 0.1
 var max_wait_time: float = 2.0 
 
-var is_attacking_player = false
 var player_attack_radius = 30.0
 var player_forget_radius = 50.0
 
@@ -24,6 +23,7 @@ var too_far_from_player = false
 var targeting_gameobject = null
 var player_too_far_radius = 80
 var move_to_player_radius = 20
+var low_health_mode = false
 
 var boredLength = 5
 var boredTimer = boredLength
@@ -48,6 +48,13 @@ var frogShape = Vector3(8,20,2)
 var mouseSprite = preload("res://Creatures/Mouse.png")
 var mouseShape = Vector3(6,16,4)
 
+var regenCooldown = 0.5
+var timeTillRegen = 0.0
+
+func SetHealth(newHealth):
+	maxHealth = newHealth
+	health = maxHealth
+
 func SetType(type):
 	match type:
 		"Beanel":
@@ -56,30 +63,35 @@ func SetType(type):
 			collisionShape.shape.height = beanelShape.y
 			collisionShape.position.y = beanelShape.z
 			health_bar.position = Vector2(-7,3)
+			SetHealth(20)
 		"Malo":
 			sprite2D.texture = maloSprite
 			collisionShape.shape.radius = maloShape.x
 			collisionShape.shape.height = maloShape.y
 			collisionShape.position.y = maloShape.z
 			health_bar.position = Vector2(-7,7)
+			SetHealth(30)
 		"Shall":
 			sprite2D.texture = shallSprite
 			collisionShape.shape.radius = shallShape.x
 			collisionShape.shape.height = shallShape.y
 			collisionShape.position.y = shallShape.z
 			health_bar.position = Vector2(-7,9)
+			SetHealth(300)
 		"Frog":
 			sprite2D.texture = frogSprite
 			collisionShape.shape.radius = frogShape.x
 			collisionShape.shape.height = frogShape.y
 			collisionShape.position.y = frogShape.z
 			health_bar.position = Vector2(-7,9)
+			SetHealth(200)
 		"Mouse":			
 			sprite2D.texture = mouseSprite
 			collisionShape.shape.radius = mouseShape.x
 			collisionShape.shape.height = mouseShape.y
 			collisionShape.position.y = mouseShape.z
 			health_bar.position = Vector2(-7,9)
+			SetHealth(70)
 
 func _set_friendly():
 	player_creature = true
@@ -89,6 +101,10 @@ func _set_friendly():
 	self.remove_from_group("Creature")
 	self.add_to_group("FriendlyCreature")
 	
+func healthToScale(health: float):
+	var max = 1000.0
+	var min = 20.0
+	return 0.25 + (health-min)/(max-min)
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -98,6 +114,15 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	health_bar.get_node("TextureProgressBar").value = (health/maxHealth) * health_bar.get_node("TextureProgressBar").max_value
+
+	self.scale = Vector2(healthToScale(maxHealth),healthToScale(maxHealth))
+	
+	if timeTillRegen > 0:
+		timeTillRegen -= delta
+	else:
+		health += delta * 0.03 * maxHealth
+		if health > maxHealth:
+			health = maxHealth
 	
 	if player && is_instance_valid(player) && spawner && is_instance_valid(spawner) && !player_creature:
 		if position.distance_to(player.position) > spawner.despawningRadius:
@@ -107,12 +132,49 @@ func _process(delta: float) -> void:
 func _physics_process(delta: float) -> void:
 	if !player || !is_instance_valid(player):
 		return
+	if !is_instance_valid(targeting_gameobject):
+		targeting_gameobject = null
 	if player_creature:
 		players_creature_ai(delta)	
 	else:
 		wild_ai(delta)
 
 func players_creature_ai(delta):
+	handle_too_far_from_player(delta)
+	
+	if low_health_mode:
+		handle_low_health(delta)
+		return
+	
+	if (health/maxHealth) < 0.5:
+		low_health_mode = true
+		pick_random_point_around_player()
+
+	# Target nearby creature
+	if targeting_gameobject:
+		if targeting_gameobject.position.distance_to(position) > player_forget_radius:
+			targeting_gameobject = null
+		attack_alive_target(delta)
+	else:
+		var creatureGroup = get_tree().get_nodes_in_group("Creature")
+		var closestTarget = null
+		var closestDist = 99999.0
+		for creature in creatureGroup:
+			# Check if the body is within the specified radius
+			var dist = creature.position.distance_to(position)
+			if dist <= player_attack_radius:
+				if dist < closestDist:
+					closestDist = dist
+					closestTarget = creature
+		if closestTarget:
+			targeting_gameobject = closestTarget
+			
+		if is_moving:
+			move_towards_target(delta)
+		else:
+			pick_random_point_around_player()
+				
+func handle_too_far_from_player(delta):
 	if too_far_from_player:
 		var dir = (player.position - position).normalized()
 		var velocity = dir * 100 * delta
@@ -124,38 +186,41 @@ func players_creature_ai(delta):
 		if player.position.distance_to(position) > player_too_far_radius:
 			too_far_from_player = true
 			targeting_gameobject = null
-			
-		if !is_instance_valid(targeting_gameobject):
-			targeting_gameobject = null
-		# Target nearby creature
-		if targeting_gameobject:
-			attack_alive_target(delta)
-		else:
-			var creatureGroup = get_tree().get_nodes_in_group("Creature")
-			for creature in creatureGroup:
-				# Check if the body is within the specified radius
-				if creature.position.distance_to(position) <= player_attack_radius || player.position.distance_to(position) <= player_attack_radius:
-					targeting_gameobject = creature
-					break
-			
-			if is_moving:
-				move_towards_target(delta)
-			else:
-				pick_random_point_around_player()
+func handle_low_health(delta):
+	if (health/maxHealth) > 0.9:
+		low_health_mode = false
+	if is_moving:
+		move_towards_target(delta)
+	else:
+		pick_random_point_around_player()
+	
 
 func wild_ai(delta):
-	if player.position.distance_to(position) < player_attack_radius:
-		is_attacking_player = true
-		targeting_gameobject = player
-	if player.position.distance_to(position) > player_forget_radius:
-		is_attacking_player = false
-		targeting_gameobject = null
+	if targeting_gameobject:
+		if targeting_gameobject.position.distance_to(position) > player_forget_radius:
+			targeting_gameobject = null
+		attack_alive_target(delta)
+	else:
+		var creatureGroup = get_tree().get_nodes_in_group("FriendlyCreature")
+		var closestTarget = null
+		var closestDist = 99999.0
+		var dist = player.position.distance_to(position)
+		if dist < player_attack_radius:
+			if dist < closestDist:
+				closestDist = dist
+				closestTarget = player
+		for creature in creatureGroup:
+			# Check if the body is within the specified radius
+			dist = creature.position.distance_to(position)
+			if dist < player_attack_radius:
+				if dist < closestDist:
+					closestDist = dist
+					closestTarget = creature
+		if closestTarget:
+			targeting_gameobject = closestTarget
 	
 	if is_moving:
-		if is_attacking_player:
-			attack_alive_target(delta)
-		else:
-			move_towards_target(delta)
+		move_towards_target(delta)
 	else:
 		wait_timer -= delta
 		if wait_timer <= 0:
@@ -196,10 +261,10 @@ func attack_alive_target(delta):
 		var other = collision.get_collider()
 		if player_creature:
 			if other.is_in_group("Creature"):
-				other.Damage(1)
+				other.Damage(randf_range(0.7, 1.3))
 		else:
-			if other.is_in_group("Player"):
-				other.Damage(1)
+			if other.is_in_group("Player") || other.is_in_group("FriendlyCreature"):
+				other.Damage(randf_range(0.7, 1.3))
 
 func pick_random_point_around_player():
 	var random_offset = Vector2(randf_range(-move_to_player_radius, move_to_player_radius), randf_range(-move_to_player_radius, move_to_player_radius))
@@ -209,9 +274,13 @@ func pick_random_point_around_player():
 
 func Damage(amount):
 	health -= amount
+	timeTillRegen = regenCooldown
 	if health <= 0.0:
-		spawner.AddScore(1)
-		Die()
+		if self.is_in_group("Creature"):
+			spawner.AddScore(maxHealth*0.05)
+			Die()
+		else:
+			SignalManager.friendly_creature_died.emit(self)
 
 func Die():
 	emit_signal("creature_died", self)

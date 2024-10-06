@@ -30,7 +30,7 @@ func _physics_process(delta: float) -> void:
 			cpu_particles_2d.emitting = false
 			animated_sprite_2d.play("Explode")
 			exploding = true
-			other.Damage(15)
+			other.Damage(5)
 	elif lifetime <= 0:
 			cpu_particles_2d.emitting = false
 			animated_sprite_2d.play("Explode")

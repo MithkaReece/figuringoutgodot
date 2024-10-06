@@ -1,11 +1,13 @@
-[gd_scene load_steps=14 format=3 uid="uid://crijalpif0wx4"]
+[gd_scene load_steps=16 format=3 uid="uid://crijalpif0wx4"]
 
 [ext_resource type="PackedScene" uid="uid://dhdwgwhqmb84i" path="res://Player.tscn" id="1_v4blh"]
 [ext_resource type="PackedScene" uid="uid://big3dhb885two" path="res://Egg.tscn" id="2_yofko"]
 [ext_resource type="Script" path="res://CameraFollow.gd" id="3_naq5x"]
+[ext_resource type="Texture2D" uid="uid://dax3tw8a8thpi" path="res://Creatures/Frog.png" id="5_4pt0x"]
 [ext_resource type="Texture2D" uid="uid://3852h1kde0nc" path="res://Tilesheet.png" id="5_gneij"]
 [ext_resource type="Script" path="res://spawner.gd" id="5_udtcu"]
 [ext_resource type="Script" path="res://TileMap.gd" id="6_mlqjc"]
+[ext_resource type="Texture2D" uid="uid://c3pdrblriok4k" path="res://CreatureBar.png" id="7_vlded"]
 
 [sub_resource type="Environment" id="Environment_urqq8"]
 background_mode = 3
@@ -306,12 +308,64 @@ target = NodePath("../Player")
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
 [node name="ScoreLabel" type="Label" parent="CanvasLayer"]
+offset_left = 891.0
 offset_right = 1150.0
 offset_bottom = 647.0
 theme_override_fonts/font = SubResource("FontFile_4632x")
 theme_override_font_sizes/font_size = 50
 text = "0"
 horizontal_alignment = 1
+
+[node name="Control" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="CreatureBar" type="Sprite2D" parent="CanvasLayer/Control"]
+position = Vector2(351, 39)
+scale = Vector2(4.33333, 4.33333)
+texture = ExtResource("7_vlded")
+
+[node name="1" type="Sprite2D" parent="CanvasLayer/Control/CreatureBar"]
+position = Vector2(-72, 0)
+texture = ExtResource("5_4pt0x")
+
+[node name="2" type="Sprite2D" parent="CanvasLayer/Control/CreatureBar"]
+position = Vector2(-56.0769, 0)
+texture = ExtResource("5_4pt0x")
+
+[node name="3" type="Sprite2D" parent="CanvasLayer/Control/CreatureBar"]
+position = Vector2(-39.9231, 0)
+texture = ExtResource("5_4pt0x")
+
+[node name="4" type="Sprite2D" parent="CanvasLayer/Control/CreatureBar"]
+position = Vector2(-23.7692, 0)
+texture = ExtResource("5_4pt0x")
+
+[node name="5" type="Sprite2D" parent="CanvasLayer/Control/CreatureBar"]
+position = Vector2(-7.84615, 0)
+texture = ExtResource("5_4pt0x")
+
+[node name="6" type="Sprite2D" parent="CanvasLayer/Control/CreatureBar"]
+position = Vector2(8.30769, 0)
+texture = ExtResource("5_4pt0x")
+
+[node name="7" type="Sprite2D" parent="CanvasLayer/Control/CreatureBar"]
+position = Vector2(24.2308, 0)
+texture = ExtResource("5_4pt0x")
+
+[node name="8" type="Sprite2D" parent="CanvasLayer/Control/CreatureBar"]
+position = Vector2(40.3846, 0)
+texture = ExtResource("5_4pt0x")
+
+[node name="9" type="Sprite2D" parent="CanvasLayer/Control/CreatureBar"]
+position = Vector2(56.0769, 0)
+texture = ExtResource("5_4pt0x")
+
+[node name="10" type="Sprite2D" parent="CanvasLayer/Control/CreatureBar"]
+position = Vector2(72, 2.98023e-08)
+texture = ExtResource("5_4pt0x")
 
 [node name="Spawner" type="Node2D" parent="."]
 script = ExtResource("5_udtcu")
