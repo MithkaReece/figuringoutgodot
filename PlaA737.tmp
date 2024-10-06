@@ -1,0 +1,43 @@
+[gd_scene load_steps=7 format=3 uid="uid://dhdwgwhqmb84i"]
+
+[ext_resource type="Script" path="res://player.gd" id="1_06dmo"]
+[ext_resource type="Texture2D" uid="uid://b4bgc8mnilpku" path="res://WaterElement.png" id="1_av5mp"]
+[ext_resource type="PackedScene" uid="uid://brgryyo3qi047" path="res://HealthBar.tscn" id="4_d04yt"]
+[ext_resource type="Texture2D" uid="uid://6j0t7qfeexim" path="res://EggShadow.png" id="4_psqq6"]
+[ext_resource type="AudioStream" uid="uid://cmyvhj2b2wjof" path="res://Sound/Walk.wav" id="5_mm7xx"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_7nq4t"]
+radius = 4.46916
+height = 13.868
+
+[node name="CharacterBody2D" type="CharacterBody2D"]
+collision_mask = 10
+motion_mode = 1
+script = ExtResource("1_06dmo")
+
+[node name="PlayerSprite" type="Sprite2D" parent="."]
+texture_filter = 1
+texture = ExtResource("1_av5mp")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-0.5, 0)
+scale = Vector2(1.0069, 1.00952)
+shape = SubResource("CapsuleShape2D_7nq4t")
+
+[node name="EggShadowParent" type="Node2D" parent="."]
+position = Vector2(-5.96046e-08, -5)
+scale = Vector2(1, 0.385)
+
+[node name="EggShadow" type="Sprite2D" parent="EggShadowParent"]
+z_index = -1
+position = Vector2(0, 19)
+texture = ExtResource("4_psqq6")
+
+[node name="HealthBar" parent="." instance=ExtResource("4_d04yt")]
+offset_left = -8.0
+offset_top = 8.0
+offset_right = -1.0
+offset_bottom = 9.0
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("5_mm7xx")

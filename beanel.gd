@@ -1,5 +1,8 @@
 extends CharacterBody2D
 signal creature_died
+@onready var walk_stream: AudioStreamPlayer2D = $WalkStream
+var walkSound = false
+var step_delay = randf_range(0.5, 1.5) 
 
 var maxHealth = 100
 var health: float = maxHealth
@@ -31,62 +34,57 @@ var target_position: Vector2 = Vector2()
 var is_moving: bool = false  
 var wait_timer: float = 0.0 
 @onready var collisionShape: CollisionShape2D = $CollisionShape2D
-@onready var sprite2D: Sprite2D = $Sprite2D
+@onready var sprite2D: AnimatedSprite2D = $Sprite2D
 
-var beanelSprite = preload("res://Creatures/Beanel.png")
+
 var beanelShape = Vector3(2.5, 16, 0)
-
-var maloSprite = preload("res://Creatures/Malo.png")
 var maloShape = Vector3(5,14,4)
-
-var shallSprite = preload("res://Creatures/Shall.png")
 var shallShape = Vector3(8,16, 1)
-
-var frogSprite = preload("res://Creatures/Frog.png")
 var frogShape = Vector3(8,20,2)
-
-var mouseSprite = preload("res://Creatures/Mouse.png")
 var mouseShape = Vector3(6,16,4)
+
+var attackCooldown = 0.7
+var timeTillAttack = 0.0
 
 var regenCooldown = 0.5
 var timeTillRegen = 0.0
+
+var bloodParticle = preload("res://BloodParticle.tscn")
 
 func SetHealth(newHealth):
 	maxHealth = newHealth
 	health = maxHealth
 
 func SetType(type):
+	sprite2D.play(type)
 	match type:
 		"Beanel":
-			sprite2D.texture = beanelSprite
 			collisionShape.shape.radius = beanelShape.x
 			collisionShape.shape.height = beanelShape.y
 			collisionShape.position.y = beanelShape.z
 			health_bar.position = Vector2(-7,3)
 			SetHealth(20)
 		"Malo":
-			sprite2D.texture = maloSprite
 			collisionShape.shape.radius = maloShape.x
 			collisionShape.shape.height = maloShape.y
 			collisionShape.position.y = maloShape.z
 			health_bar.position = Vector2(-7,7)
 			SetHealth(30)
 		"Shall":
-			sprite2D.texture = shallSprite
 			collisionShape.shape.radius = shallShape.x
 			collisionShape.shape.height = shallShape.y
 			collisionShape.position.y = shallShape.z
 			health_bar.position = Vector2(-7,9)
 			SetHealth(300)
+			walk_stream.stream = load("res://Sound/AnotherMovement.wav")
 		"Frog":
-			sprite2D.texture = frogSprite
 			collisionShape.shape.radius = frogShape.x
 			collisionShape.shape.height = frogShape.y
 			collisionShape.position.y = frogShape.z
 			health_bar.position = Vector2(-7,9)
 			SetHealth(200)
+			walk_stream.stream = load("res://Sound/AnotherMovement.wav")
 		"Mouse":			
-			sprite2D.texture = mouseSprite
 			collisionShape.shape.radius = mouseShape.x
 			collisionShape.shape.height = mouseShape.y
 			collisionShape.position.y = mouseShape.z
@@ -104,7 +102,7 @@ func _set_friendly():
 func healthToScale(health: float):
 	var max = 1000.0
 	var min = 20.0
-	return 0.25 + (health-min)/(max-min)
+	return 0.25 + (health-min)/(max-min) * 2
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -114,6 +112,9 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	health_bar.get_node("TextureProgressBar").value = (health/maxHealth) * health_bar.get_node("TextureProgressBar").max_value
+
+	if timeTillAttack > 0:
+		timeTillAttack -= delta
 
 	self.scale = Vector2(healthToScale(maxHealth),healthToScale(maxHealth))
 	
@@ -125,7 +126,7 @@ func _process(delta: float) -> void:
 			health = maxHealth
 	
 	if player && is_instance_valid(player) && spawner && is_instance_valid(spawner) && !player_creature:
-		if position.distance_to(player.position) > spawner.despawningRadius:
+		if position.distance_squared_to(player.position) > spawner.despawningRadius * spawner.despawningRadius:
 			Die()
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -152,7 +153,7 @@ func players_creature_ai(delta):
 
 	# Target nearby creature
 	if targeting_gameobject:
-		if targeting_gameobject.position.distance_to(position) > player_forget_radius:
+		if targeting_gameobject.position.distance_squared_to(position) > player_forget_radius*player_forget_radius:
 			targeting_gameobject = null
 		attack_alive_target(delta)
 	else:
@@ -161,8 +162,8 @@ func players_creature_ai(delta):
 		var closestDist = 99999.0
 		for creature in creatureGroup:
 			# Check if the body is within the specified radius
-			var dist = creature.position.distance_to(position)
-			if dist <= player_attack_radius:
+			var dist = creature.position.distance_squared_to(position)
+			if dist <= player_attack_radius * player_attack_radius:
 				if dist < closestDist:
 					closestDist = dist
 					closestTarget = creature
@@ -179,11 +180,11 @@ func handle_too_far_from_player(delta):
 		var dir = (player.position - position).normalized()
 		var velocity = dir * 100 * delta
 		move_and_collide(velocity)
-		if player.position.distance_to(position) < move_to_player_radius:
+		if player.position.distance_squared_to(position) < move_to_player_radius*move_to_player_radius:
 			too_far_from_player = false
 			pick_random_point_around_player()
 	else:
-		if player.position.distance_to(position) > player_too_far_radius:
+		if player.position.distance_squared_to(position) > player_too_far_radius*player_too_far_radius:
 			too_far_from_player = true
 			targeting_gameobject = null
 func handle_low_health(delta):
@@ -197,22 +198,22 @@ func handle_low_health(delta):
 
 func wild_ai(delta):
 	if targeting_gameobject:
-		if targeting_gameobject.position.distance_to(position) > player_forget_radius:
+		if targeting_gameobject.position.distance_squared_to(position) > player_forget_radius * player_forget_radius:
 			targeting_gameobject = null
 		attack_alive_target(delta)
 	else:
 		var creatureGroup = get_tree().get_nodes_in_group("FriendlyCreature")
 		var closestTarget = null
 		var closestDist = 99999.0
-		var dist = player.position.distance_to(position)
-		if dist < player_attack_radius:
+		var dist = player.position.distance_squared_to(position)
+		if dist < player_attack_radius * player_attack_radius:
 			if dist < closestDist:
 				closestDist = dist
 				closestTarget = player
 		for creature in creatureGroup:
 			# Check if the body is within the specified radius
-			dist = creature.position.distance_to(position)
-			if dist < player_attack_radius:
+			dist = creature.position.distance_squared_to(position)
+			if dist < player_attack_radius * player_attack_radius:
 				if dist < closestDist:
 					closestDist = dist
 					closestTarget = creature
@@ -243,7 +244,10 @@ func move_towards_target(delta):
 	HandleFlip(velocity)
 	move_and_collide(velocity)
 	
-	if position.distance_to(target_position) < 10:
+	HandleWalkSound(velocity, delta)
+
+	
+	if position.distance_squared_to(target_position) < 10 * 10:
 		is_moving = false
 		wait_timer = randf_range(min_wait_time, max_wait_time)
 		velocity = Vector2()
@@ -255,16 +259,25 @@ func attack_alive_target(delta):
 	var dir = (targeting_gameobject.position-position).normalized()
 	var velocity = dir * speed * delta
 	HandleFlip(velocity)
+	HandleWalkSound(velocity,delta)
 	var collision = move_and_collide(velocity)
+	
+	if timeTillAttack > 0:
+		return
+	
+	var baseDamage = maxHealth*0.05
+	var rndDamage = randf_range(0.7*baseDamage,1.3*baseDamage)
 	
 	if collision:
 		var other = collision.get_collider()
 		if player_creature:
 			if other.is_in_group("Creature"):
-				other.Damage(randf_range(0.7, 1.3))
+				timeTillAttack = attackCooldown
+				other.Damage(rndDamage)
 		else:
 			if other.is_in_group("Player") || other.is_in_group("FriendlyCreature"):
-				other.Damage(randf_range(0.7, 1.3))
+				timeTillAttack = attackCooldown
+				other.Damage(rndDamage)
 
 func pick_random_point_around_player():
 	var random_offset = Vector2(randf_range(-move_to_player_radius, move_to_player_radius), randf_range(-move_to_player_radius, move_to_player_radius))
@@ -281,6 +294,13 @@ func Damage(amount):
 			Die()
 		else:
 			SignalManager.friendly_creature_died.emit(self)
+		var blood = bloodParticle.instantiate()
+		get_tree().root.add_child(blood)
+		blood.position = position
+		blood.emitting = true
+		await get_tree().create_timer(blood.lifetime).timeout
+		blood.queue_free()
+		
 
 func Die():
 	emit_signal("creature_died", self)
@@ -291,3 +311,20 @@ func HandleFlip(velocity):
 		sprite2D.flip_h = false  
 	elif velocity.x < 0:
 		sprite2D.flip_h = true 
+		
+func HandleWalkSound(velocity, delta):
+	walk_stream.volume_db = 0 - 0.003*position.distance_squared_to(player.position)
+	if (walkSound && !walk_stream.playing) || walk_stream.volume_db < -20:
+		walkSound = false	
+		spawner.creatureFootstepCount-=1
+	step_delay -= delta
+		
+	if velocity.length() > 0:
+		if not walk_stream.playing && spawner.creatureFootstepCount < spawner.maxCreatureFootstep && step_delay < 0.0:
+			walkSound = true
+			spawner.creatureFootstepCount+=1
+			walk_stream.pitch_scale = randf_range(0.95,1.0)
+			walk_stream.play()
+	elif walk_stream.playing:
+		walk_stream.stop()
+		spawner.creatureFootstepCount-=1

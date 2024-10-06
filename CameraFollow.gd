@@ -14,11 +14,11 @@ func _ready() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
-	if player && is_instance_valid(player):
+	if player && is_instance_valid(player) && position.distance_to(player.position) < 20:
 		position = position.lerp(player.position, lerp_speed * delta)
 
 var zoom_speed = 0.5
-var min_zoom = Vector2(0.5,0.5)
+var min_zoom = Vector2(3.5,3.5)
 var max_zoom = Vector2(5.0,5.0)
 
 func _input(event):

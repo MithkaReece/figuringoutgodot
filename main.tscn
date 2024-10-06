@@ -1,13 +1,14 @@
-[gd_scene load_steps=16 format=3 uid="uid://crijalpif0wx4"]
+[gd_scene load_steps=21 format=3 uid="uid://crijalpif0wx4"]
 
 [ext_resource type="PackedScene" uid="uid://dhdwgwhqmb84i" path="res://Player.tscn" id="1_v4blh"]
 [ext_resource type="PackedScene" uid="uid://big3dhb885two" path="res://Egg.tscn" id="2_yofko"]
 [ext_resource type="Script" path="res://CameraFollow.gd" id="3_naq5x"]
-[ext_resource type="Texture2D" uid="uid://dax3tw8a8thpi" path="res://Creatures/Frog.png" id="5_4pt0x"]
+[ext_resource type="Texture2D" uid="uid://c8t0m0lom5xik" path="res://Power.png" id="4_1yjr8"]
 [ext_resource type="Texture2D" uid="uid://3852h1kde0nc" path="res://Tilesheet.png" id="5_gneij"]
 [ext_resource type="Script" path="res://spawner.gd" id="5_udtcu"]
 [ext_resource type="Script" path="res://TileMap.gd" id="6_mlqjc"]
 [ext_resource type="Texture2D" uid="uid://c3pdrblriok4k" path="res://CreatureBar.png" id="7_vlded"]
+[ext_resource type="PackedScene" uid="uid://5wbnsnbyaya7" path="res://WinScene.tscn" id="9_s1iwk"]
 
 [sub_resource type="Environment" id="Environment_urqq8"]
 background_mode = 3
@@ -260,6 +261,169 @@ cache/0/50/0/underline_position = 0.0
 cache/0/50/0/underline_thickness = 0.0
 cache/0/50/0/scale = 1.0
 
+[sub_resource type="FontFile" id="FontFile_1vjei"]
+cache/0/16/0/ascent = 0.0
+cache/0/16/0/descent = 0.0
+cache/0/16/0/underline_position = 0.0
+cache/0/16/0/underline_thickness = 0.0
+cache/0/16/0/scale = 1.0
+cache/0/41/0/ascent = 0.0
+cache/0/41/0/descent = 0.0
+cache/0/41/0/underline_position = 0.0
+cache/0/41/0/underline_thickness = 0.0
+cache/0/41/0/scale = 1.0
+cache/0/51/0/ascent = 0.0
+cache/0/51/0/descent = 0.0
+cache/0/51/0/underline_position = 0.0
+cache/0/51/0/underline_thickness = 0.0
+cache/0/51/0/scale = 1.0
+cache/0/71/0/ascent = 0.0
+cache/0/71/0/descent = 0.0
+cache/0/71/0/underline_position = 0.0
+cache/0/71/0/underline_thickness = 0.0
+cache/0/71/0/scale = 1.0
+cache/0/96/0/ascent = 0.0
+cache/0/96/0/descent = 0.0
+cache/0/96/0/underline_position = 0.0
+cache/0/96/0/underline_thickness = 0.0
+cache/0/96/0/scale = 1.0
+cache/0/126/0/ascent = 0.0
+cache/0/126/0/descent = 0.0
+cache/0/126/0/underline_position = 0.0
+cache/0/126/0/underline_thickness = 0.0
+cache/0/126/0/scale = 1.0
+cache/0/146/0/ascent = 0.0
+cache/0/146/0/descent = 0.0
+cache/0/146/0/underline_position = 0.0
+cache/0/146/0/underline_thickness = 0.0
+cache/0/146/0/scale = 1.0
+cache/0/171/0/ascent = 0.0
+cache/0/171/0/descent = 0.0
+cache/0/171/0/underline_position = 0.0
+cache/0/171/0/underline_thickness = 0.0
+cache/0/171/0/scale = 1.0
+cache/0/196/0/ascent = 0.0
+cache/0/196/0/descent = 0.0
+cache/0/196/0/underline_position = 0.0
+cache/0/196/0/underline_thickness = 0.0
+cache/0/196/0/scale = 1.0
+cache/0/216/0/ascent = 0.0
+cache/0/216/0/descent = 0.0
+cache/0/216/0/underline_position = 0.0
+cache/0/216/0/underline_thickness = 0.0
+cache/0/216/0/scale = 1.0
+cache/0/231/0/ascent = 0.0
+cache/0/231/0/descent = 0.0
+cache/0/231/0/underline_position = 0.0
+cache/0/231/0/underline_thickness = 0.0
+cache/0/231/0/scale = 1.0
+cache/0/236/0/ascent = 0.0
+cache/0/236/0/descent = 0.0
+cache/0/236/0/underline_position = 0.0
+cache/0/236/0/underline_thickness = 0.0
+cache/0/236/0/scale = 1.0
+cache/0/241/0/ascent = 0.0
+cache/0/241/0/descent = 0.0
+cache/0/241/0/underline_position = 0.0
+cache/0/241/0/underline_thickness = 0.0
+cache/0/241/0/scale = 1.0
+cache/0/251/0/ascent = 0.0
+cache/0/251/0/descent = 0.0
+cache/0/251/0/underline_position = 0.0
+cache/0/251/0/underline_thickness = 0.0
+cache/0/251/0/scale = 1.0
+cache/0/261/0/ascent = 0.0
+cache/0/261/0/descent = 0.0
+cache/0/261/0/underline_position = 0.0
+cache/0/261/0/underline_thickness = 0.0
+cache/0/261/0/scale = 1.0
+cache/0/271/0/ascent = 0.0
+cache/0/271/0/descent = 0.0
+cache/0/271/0/underline_position = 0.0
+cache/0/271/0/underline_thickness = 0.0
+cache/0/271/0/scale = 1.0
+cache/0/266/0/ascent = 0.0
+cache/0/266/0/descent = 0.0
+cache/0/266/0/underline_position = 0.0
+cache/0/266/0/underline_thickness = 0.0
+cache/0/266/0/scale = 1.0
+cache/0/256/0/ascent = 0.0
+cache/0/256/0/descent = 0.0
+cache/0/256/0/underline_position = 0.0
+cache/0/256/0/underline_thickness = 0.0
+cache/0/256/0/scale = 1.0
+cache/0/206/0/ascent = 0.0
+cache/0/206/0/descent = 0.0
+cache/0/206/0/underline_position = 0.0
+cache/0/206/0/underline_thickness = 0.0
+cache/0/206/0/scale = 1.0
+cache/0/176/0/ascent = 0.0
+cache/0/176/0/descent = 0.0
+cache/0/176/0/underline_position = 0.0
+cache/0/176/0/underline_thickness = 0.0
+cache/0/176/0/scale = 1.0
+cache/0/106/0/ascent = 0.0
+cache/0/106/0/descent = 0.0
+cache/0/106/0/underline_position = 0.0
+cache/0/106/0/underline_thickness = 0.0
+cache/0/106/0/scale = 1.0
+cache/0/86/0/ascent = 0.0
+cache/0/86/0/descent = 0.0
+cache/0/86/0/underline_position = 0.0
+cache/0/86/0/underline_thickness = 0.0
+cache/0/86/0/scale = 1.0
+cache/0/66/0/ascent = 0.0
+cache/0/66/0/descent = 0.0
+cache/0/66/0/underline_position = 0.0
+cache/0/66/0/underline_thickness = 0.0
+cache/0/66/0/scale = 1.0
+cache/0/46/0/ascent = 0.0
+cache/0/46/0/descent = 0.0
+cache/0/46/0/underline_position = 0.0
+cache/0/46/0/underline_thickness = 0.0
+cache/0/46/0/scale = 1.0
+cache/0/31/0/ascent = 0.0
+cache/0/31/0/descent = 0.0
+cache/0/31/0/underline_position = 0.0
+cache/0/31/0/underline_thickness = 0.0
+cache/0/31/0/scale = 1.0
+cache/0/36/0/ascent = 0.0
+cache/0/36/0/descent = 0.0
+cache/0/36/0/underline_position = 0.0
+cache/0/36/0/underline_thickness = 0.0
+cache/0/36/0/scale = 1.0
+cache/0/56/0/ascent = 0.0
+cache/0/56/0/descent = 0.0
+cache/0/56/0/underline_position = 0.0
+cache/0/56/0/underline_thickness = 0.0
+cache/0/56/0/scale = 1.0
+cache/0/61/0/ascent = 0.0
+cache/0/61/0/descent = 0.0
+cache/0/61/0/underline_position = 0.0
+cache/0/61/0/underline_thickness = 0.0
+cache/0/61/0/scale = 1.0
+cache/0/76/0/ascent = 0.0
+cache/0/76/0/descent = 0.0
+cache/0/76/0/underline_position = 0.0
+cache/0/76/0/underline_thickness = 0.0
+cache/0/76/0/scale = 1.0
+cache/0/81/0/ascent = 0.0
+cache/0/81/0/descent = 0.0
+cache/0/81/0/underline_position = 0.0
+cache/0/81/0/underline_thickness = 0.0
+cache/0/81/0/scale = 1.0
+cache/0/91/0/ascent = 0.0
+cache/0/91/0/descent = 0.0
+cache/0/91/0/underline_position = 0.0
+cache/0/91/0/underline_thickness = 0.0
+cache/0/91/0/scale = 1.0
+
+[sub_resource type="LabelSettings" id="LabelSettings_reuj4"]
+font = SubResource("FontFile_1vjei")
+font_size = 86
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_cd3mb"]
+
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_efy18"]
 texture = ExtResource("5_gneij")
 0:0/0 = 0
@@ -285,6 +449,9 @@ colors = PackedColorArray(0, 1, 0, 1, 0, 1, 1, 1, 0.809576, 0.947627, 0.302638, 
 color_ramp = SubResource("Gradient_rgivg")
 noise = SubResource("FastNoiseLite_mp0ys")
 
+[sub_resource type="Gradient" id="Gradient_tbik3"]
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+
 [node name="Main" type="Node2D"]
 position = Vector2(1, 1)
 
@@ -307,15 +474,6 @@ target = NodePath("../Player")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
-[node name="ScoreLabel" type="Label" parent="CanvasLayer"]
-offset_left = 891.0
-offset_right = 1150.0
-offset_bottom = 647.0
-theme_override_fonts/font = SubResource("FontFile_4632x")
-theme_override_font_sizes/font_size = 50
-text = "0"
-horizontal_alignment = 1
-
 [node name="Control" type="Control" parent="CanvasLayer"]
 layout_mode = 3
 anchors_preset = 0
@@ -329,43 +487,71 @@ texture = ExtResource("7_vlded")
 
 [node name="1" type="Sprite2D" parent="CanvasLayer/Control/CreatureBar"]
 position = Vector2(-72, 0)
-texture = ExtResource("5_4pt0x")
 
 [node name="2" type="Sprite2D" parent="CanvasLayer/Control/CreatureBar"]
 position = Vector2(-56.0769, 0)
-texture = ExtResource("5_4pt0x")
 
 [node name="3" type="Sprite2D" parent="CanvasLayer/Control/CreatureBar"]
 position = Vector2(-39.9231, 0)
-texture = ExtResource("5_4pt0x")
 
 [node name="4" type="Sprite2D" parent="CanvasLayer/Control/CreatureBar"]
 position = Vector2(-23.7692, 0)
-texture = ExtResource("5_4pt0x")
 
 [node name="5" type="Sprite2D" parent="CanvasLayer/Control/CreatureBar"]
 position = Vector2(-7.84615, 0)
-texture = ExtResource("5_4pt0x")
 
 [node name="6" type="Sprite2D" parent="CanvasLayer/Control/CreatureBar"]
 position = Vector2(8.30769, 0)
-texture = ExtResource("5_4pt0x")
 
 [node name="7" type="Sprite2D" parent="CanvasLayer/Control/CreatureBar"]
 position = Vector2(24.2308, 0)
-texture = ExtResource("5_4pt0x")
 
 [node name="8" type="Sprite2D" parent="CanvasLayer/Control/CreatureBar"]
 position = Vector2(40.3846, 0)
-texture = ExtResource("5_4pt0x")
 
 [node name="9" type="Sprite2D" parent="CanvasLayer/Control/CreatureBar"]
 position = Vector2(56.0769, 0)
-texture = ExtResource("5_4pt0x")
 
 [node name="10" type="Sprite2D" parent="CanvasLayer/Control/CreatureBar"]
 position = Vector2(72, 2.98023e-08)
-texture = ExtResource("5_4pt0x")
+
+[node name="Sprite2D" type="Sprite2D" parent="CanvasLayer"]
+position = Vector2(875, 39)
+scale = Vector2(2.40374, 2.40374)
+texture = ExtResource("4_1yjr8")
+
+[node name="ScoreLabel" type="Label" parent="CanvasLayer"]
+offset_left = 713.0
+offset_top = -26.0
+offset_right = 821.0
+offset_bottom = 116.0
+scale = Vector2(1.02741, 1.02741)
+theme_override_fonts/font = SubResource("FontFile_4632x")
+theme_override_font_sizes/font_size = 50
+text = "0"
+label_settings = SubResource("LabelSettings_reuj4")
+horizontal_alignment = 1
+
+[node name="Panel" parent="CanvasLayer" instance=ExtResource("9_s1iwk")]
+visible = false
+offset_left = 1.0
+offset_top = 1.0
+offset_right = 41.0
+offset_bottom = 41.0
+
+[node name="CheckButton" type="CheckButton" parent="CanvasLayer"]
+offset_left = 1107.0
+offset_top = -1.0
+offset_right = 1151.0
+offset_bottom = 26.0
+theme_override_styles/focus = SubResource("StyleBoxEmpty_cd3mb")
+button_pressed = true
+
+[node name="Label" type="Label" parent="CanvasLayer"]
+offset_left = 1057.0
+offset_right = 1106.0
+offset_bottom = 23.0
+text = "Sound"
 
 [node name="Spawner" type="Node2D" parent="."]
 script = ExtResource("5_udtcu")
@@ -381,3 +567,17 @@ noise_height_texture = SubResource("NoiseTexture2D_lqq7i")
 [node name="Layer1" type="TileMapLayer" parent="TileMap"]
 use_parent_material = true
 tile_set = SubResource("TileSet_fsc20")
+
+[node name="CPUParticles2D" type="CPUParticles2D" parent="."]
+position = Vector2(-31, -37)
+emitting = false
+amount = 20
+lifetime = 0.8
+one_shot = true
+explosiveness = 1.0
+direction = Vector2(0, -1)
+gravity = Vector2(0, 200)
+initial_velocity_min = 30.0
+initial_velocity_max = 80.0
+color = Color(1, 0, 0, 1)
+color_ramp = SubResource("Gradient_tbik3")

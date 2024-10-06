@@ -1,7 +1,8 @@
-[gd_scene load_steps=25 format=3 uid="uid://hyf4p1nosccm"]
+[gd_scene load_steps=26 format=3 uid="uid://hyf4p1nosccm"]
 
 [ext_resource type="Texture2D" uid="uid://bx4aue0ir5ybg" path="res://FireSpriteSheet.png" id="1_0h83u"]
 [ext_resource type="Script" path="res://Fireball.gd" id="1_e2m33"]
+[ext_resource type="AudioStream" uid="uid://xmukhxilc71m" path="res://Sound/Explode.wav" id="3_5yqc3"]
 
 [sub_resource type="Gradient" id="Gradient_8gqw5"]
 offsets = PackedFloat32Array(0, 0.753333, 1)
@@ -182,5 +183,9 @@ animation = &"Explode"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_8f74m")
+
+[node name="ExplodeAudio" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("3_5yqc3")
+volume_db = -10.0
 
 [connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_animated_sprite_2d_animation_finished"]

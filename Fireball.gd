@@ -1,6 +1,7 @@
 extends CharacterBody2D
 @onready var cpu_particles_2d: CPUParticles2D = $CPUParticles2D
 @onready var animated_sprite_2d: AnimatedSprite2D = $AnimatedSprite2D
+@onready var explode_audio: AudioStreamPlayer2D = $ExplodeAudio
 
 var range = 1.0
 var speed = 10.0
@@ -30,11 +31,13 @@ func _physics_process(delta: float) -> void:
 			cpu_particles_2d.emitting = false
 			animated_sprite_2d.play("Explode")
 			exploding = true
+			explode_audio.play()
 			other.Damage(5)
 	elif lifetime <= 0:
 			cpu_particles_2d.emitting = false
 			animated_sprite_2d.play("Explode")
 			exploding = true
+			explode_audio.play()
 
 func _on_animated_sprite_2d_animation_finished() -> void:
 	queue_free()

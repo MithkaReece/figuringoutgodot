@@ -10,6 +10,17 @@ extends CharacterBody2D
 @onready var _9: Sprite2D = $"../CanvasLayer/Control/CreatureBar/9"
 @onready var _10: Sprite2D = $"../CanvasLayer/Control/CreatureBar/10"
 
+var beanelSprite = preload("res://Creatures/Beanel.png")
+var maloSprite = preload("res://Creatures/Malo.png")
+var shallSprite = preload("res://Creatures/Shall.png")
+var frogSprite = preload("res://Creatures/Frog.png")
+var mouseSprite = preload("res://Creatures/Mouse.png")
+
+@onready var audioStream: AudioStreamPlayer2D = $WalkAudio
+@onready var hurt_audio: AudioStreamPlayer2D = $HurtAudio
+@onready var shoot_audio: AudioStreamPlayer2D = $ShootAudio
+
+@onready var player_sprite: AnimatedSprite2D = $PlayerSprite
 
 @onready var spawner: Node2D = $"../Spawner"
 
@@ -29,6 +40,8 @@ var fireballScene = preload("res://Fireball.tscn")
 var fireballRange = 30
 
 var eggMenu = preload("res://EggUI.tscn")
+
+
 
 var canMove = true
 
@@ -55,8 +68,11 @@ var timeTillRegen = 0.0
 var healthGainMult = 1.0
 
 func _ready() -> void:
+	canDie = true
+	SignalManager.win_game.connect(stopDeath)
+	SignalManager.restart_game.connect(CleanupScene)
 	SignalManager.friendly_creature_died.connect(_on_friendly_death)
-	
+	player_sprite.play()
 	carryingEggType = null
 	egg_sprite = null
 	self.add_to_group("Player")
@@ -65,6 +81,10 @@ func _ready() -> void:
 	health_bar.get_node("TextureProgressBar").texture_progress = friendlyHealthBarTexture
 
 func _process(delta: float) -> void:
+	shooting()
+	
+	var size = 0.5 + sqrt(score) * 0.02 * 2
+	scale = Vector2(size,size)
 	_update_creature_bar()
 	health_bar.get_node("TextureProgressBar").value = (health/maxHealth) * health_bar.get_node("TextureProgressBar").max_value
 	if timeTillRegen > 0:
@@ -87,50 +107,65 @@ func _process(delta: float) -> void:
 	handlePath()
 	handleEgg(delta)
 
+func creatureToTexture(creature):
+	match creature.get_node("Sprite2D").animation:
+		"Beanel":
+			return beanelSprite
+		"Frog":
+			return frogSprite
+		"Malo":
+			return maloSprite
+		"Mouse":
+			return mouseSprite
+		"Shall":
+			return shallSprite
+
 func _update_creature_bar():
 	if 0 < creatures.size():
-		_1.texture = creatures[0].get_node("Sprite2D").texture
+		_1.texture = creatureToTexture(creatures[0])
 	else:
 		_1.texture = null
 	if 1 < creatures.size():
-		_2.texture = creatures[1].get_node("Sprite2D").texture
+		_2.texture = creatureToTexture(creatures[1])
 	else:
 		_2.texture = null
 	if 2 < creatures.size():
-		_3.texture = creatures[2].get_node("Sprite2D").texture
+		_3.texture = creatureToTexture(creatures[2])
 	else:
 		_3.texture = null
 	if 3 < creatures.size():
-		_4.texture = creatures[3].get_node("Sprite2D").texture
+		_4.texture = creatureToTexture(creatures[3])
 	else:
 		_4.texture = null
 	if 4 < creatures.size():
-		_5.texture = creatures[4].get_node("Sprite2D").texture
+		_5.texture = creatureToTexture(creatures[4])
 	else:
 		_5.texture = null
 	if 5 < creatures.size():
-		_6.texture = creatures[5].get_node("Sprite2D").texture
+		_6.texture = creatureToTexture(creatures[5])
 	else:
 		_6.texture = null
 	if 6 < creatures.size():
-		_7.texture = creatures[6].get_node("Sprite2D").texture
+		_7.texture = creatureToTexture(creatures[6])
 	else:
 		_7.texture = null
 	if 7 < creatures.size():
-		_8.texture = creatures[7].get_node("Sprite2D").texture
+		_8.texture = creatureToTexture(creatures[7])
 	else:
 		_8.texture = null
 	if 8 < creatures.size():
-		_9.texture = creatures[8].get_node("Sprite2D").texture
+		_9.texture = creatureToTexture(creatures[8])
 	else:
 		_9.texture = null
 	if 9 < creatures.size():
-		_10.texture = creatures[9].get_node("Sprite2D").texture
+		_10.texture = creatureToTexture(creatures[9])
 	else:
 		_10.texture = null
 
-func _input(event):
-	if event is InputEventMouseButton and event.pressed && event.button_index == MOUSE_BUTTON_LEFT && timeTillFireball <= 0.0:
+func shooting():
+	if Input.is_mouse_button_pressed(1) && timeTillFireball <= 0.0:
+		shoot_audio.pitch_scale = randf_range(0.8,0.9)
+		shoot_audio.play()
 		timeTillFireball = fireballCoolDown
 		var mousePos = get_global_mouse_position()
 		var dir = (mousePos - position + velocity.normalized()).normalized()
@@ -139,7 +174,7 @@ func _input(event):
 		fireball.position = position + 10*dir
 		fireball.velocity = 70 * dir
 		fireball.speed = 70
-		fireball.SetRange(fireballRange)
+		fireball.SetRange(fireballRange + 0.1*score)
 
 			
 
@@ -154,8 +189,16 @@ func _physics_process(delta: float) -> void:
 	if direction:
 		velocity = direction * speed
 	else:
-		velocity.x = move_toward(velocity.x, 0, speed)
-		velocity.y = move_toward(velocity.y, 0, speed)
+		velocity.x = move_toward(velocity.x, 0, speed*1.5*delta)
+		velocity.y = move_toward(velocity.y, 0, speed*1.5*delta)
+		
+	audioStream.volume_db = (velocity.length()/speed)*20.0-25.0
+		
+	if velocity.length() > 0:
+		if not audioStream.playing:
+			audioStream.play()
+	elif audioStream.playing:
+		audioStream.stop()
 
 	var collision = move_and_collide(velocity * delta)
 	
@@ -215,6 +258,8 @@ func spawnFromEgg():
 	carryingEggTimer = null
 	egg_sprite.texture = null
 	egg_shadow.texture = null
+	if creatures.size() >= 10:
+		SignalManager.win_game.emit()
 	
 func dropEgg():
 	# Todo respawn egg on ground
@@ -224,17 +269,28 @@ func dropEgg():
 	egg_sprite.texture = null
 	egg_shadow.texture = null
 
+var canDie = true
+func stopDeath():
+	canDie = false
+
 func Damage(amount):
+	if !canDie:
+		return
+	hurt_audio.play()
 	health -= amount
 	timeTillRegen = regenCooldown
 	if health <= 0:
-		if egg_sprite:
-			egg_sprite.queue_free()
-		for creature in creatures:
-			creature.queue_free()
-		spawner.Clear()
-		carryingEggType = null
-		get_tree().reload_current_scene()
+		CleanupScene()
+		
+func CleanupScene():
+	get_tree().paused = false
+	if egg_sprite:
+		egg_sprite.queue_free()
+	for creature in creatures:
+		creature.queue_free()
+	spawner.Clear()
+	carryingEggType = null
+	get_tree().reload_current_scene()
 
 func _on_friendly_death(creature):
 	creatures.erase(creature)

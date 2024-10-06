@@ -3,4 +3,5 @@
 [ext_resource type="Texture2D" uid="uid://bdgyxmdmnk47d" path="res://Egg.png" id="1_alh6d"]
 
 [node name="EggSprite" type="Sprite2D"]
+z_index = 10
 texture = ExtResource("1_alh6d")
