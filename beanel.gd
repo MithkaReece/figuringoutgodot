@@ -119,6 +119,7 @@ func players_creature_ai(delta):
 		move_and_collide(velocity)
 		if player.position.distance_to(position) < move_to_player_radius:
 			too_far_from_player = false
+			pick_random_point_around_player()
 	else:
 		if player.position.distance_to(position) > player_too_far_radius:
 			too_far_from_player = true
@@ -132,8 +133,11 @@ func players_creature_ai(delta):
 				targeting_gameobject = creature
 				break
 		attack_alive_target(delta)
-		#if targeting_gameobject == null:
-			
+		if targeting_gameobject == null:
+			if is_moving:
+				move_towards_target(delta)
+			else:
+				pick_random_point_around_player()
 
 func wild_ai(delta):
 	if player.position.distance_to(position) < player_attack_radius:
@@ -193,9 +197,16 @@ func attack_alive_target(delta):
 			if other.is_in_group("Player"):
 				other.Damage(1)
 
+func pick_random_point_around_player():
+	var random_offset = Vector2(randf_range(-move_to_player_radius, move_to_player_radius), randf_range(-move_to_player_radius, move_to_player_radius))
+	target_position = player.position + random_offset
+	is_moving = true
+	boredTimer = boredLength
+
 func Damage(amount):
 	health -= amount
 	if health <= 0.0:
+		spawner.AddScore(1)
 		Die()
 
 func Die():

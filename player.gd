@@ -15,6 +15,7 @@ var eggTexture = preload("res://Egg.png")
 var eggShadowTexture = preload("res://EggShadow.png")
 
 var fireballScene = preload("res://Fireball.tscn")
+var fireballRange = 30
 
 var eggMenu = preload("res://EggUI.tscn")
 
@@ -63,10 +64,12 @@ func _input(event):
 		var mousePos = get_global_mouse_position()
 		var dir = (mousePos - position).normalized()
 		var fireball = fireballScene.instantiate();
+		get_tree().root.add_child(fireball)
 		fireball.position = position + 10*dir
 		fireball.direction = dir
 		fireball.speed = 70
-		get_tree().root.add_child(fireball)
+		fireball.SetRange(fireballRange)
+
 			
 
 func _physics_process(delta: float) -> void:

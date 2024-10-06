@@ -1,6 +1,7 @@
 extends Node2D
 
 @onready var player: CharacterBody2D = $"../Player"
+@onready var score_label: Label = $"../CanvasLayer/ScoreLabel"
 
 var creatureTypes = ["Beanel", "Malo" , "Shall", "Frog", "Mouse"]
 var creatureScene = preload("res://beanel.tscn")
@@ -16,6 +17,8 @@ const spawningMaxRadius = 300
 var despawningRadius = spawningMaxRadius + 30
 var spawnInterval: float = 0.001
 var timeTillSpawn = spawnInterval
+
+var score = 0
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -86,3 +89,7 @@ func Clear():
 		if creature && is_instance_valid(creature):
 			creature.queue_free()
 	creatures.clear()
+	
+func AddScore(value):
+	score += value
+	score_label.text = str(score)
