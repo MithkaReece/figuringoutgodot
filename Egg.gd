@@ -1,5 +1,5 @@
 extends StaticBody2D
-signal egg_pickup
+
 @export var player: CharacterBody2D
 @export var spawner: Node2D
 
@@ -15,5 +15,5 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	if player && is_instance_valid(player) && spawner && is_instance_valid(spawner):
 		if position.distance_to(player.position) > spawner.despawningRadius:
-			emit_signal("egg_pickup", self)
+			SignalManager.egg_pickup.emit(self)
 			queue_free()

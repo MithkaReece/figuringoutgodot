@@ -123,17 +123,21 @@ func players_creature_ai(delta):
 	else:
 		if player.position.distance_to(position) > player_too_far_radius:
 			too_far_from_player = true
+			targeting_gameobject = null
 			
+		if !is_instance_valid(targeting_gameobject):
+			targeting_gameobject = null
 		# Target nearby creature
-		targeting_gameobject = null
-		var creatureGroup = get_tree().get_nodes_in_group("Creature")
-		for creature in creatureGroup:
-			# Check if the body is within the specified radius
-			if creature.position.distance_to(position) <= player_attack_radius:
-				targeting_gameobject = creature
-				break
-		attack_alive_target(delta)
-		if targeting_gameobject == null:
+		if targeting_gameobject:
+			attack_alive_target(delta)
+		else:
+			var creatureGroup = get_tree().get_nodes_in_group("Creature")
+			for creature in creatureGroup:
+				# Check if the body is within the specified radius
+				if creature.position.distance_to(position) <= player_attack_radius || player.position.distance_to(position) <= player_attack_radius:
+					targeting_gameobject = creature
+					break
+			
 			if is_moving:
 				move_towards_target(delta)
 			else:
@@ -211,7 +215,7 @@ func Damage(amount):
 
 func Die():
 	emit_signal("creature_died", self)
-	queue_free()
+
 	
 func HandleFlip(velocity):
 	if velocity.x > 0:

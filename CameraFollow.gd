@@ -14,7 +14,7 @@ func _ready() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
-	if player:
+	if player && is_instance_valid(player):
 		position = position.lerp(player.position, lerp_speed * delta)
 
 var zoom_speed = 0.5

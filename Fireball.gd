@@ -4,7 +4,7 @@ extends CharacterBody2D
 
 var range = 1.0
 var speed = 10.0
-var direction = Vector2(0,0)
+
 var exploding = false
 var lifetime = 100
 
@@ -20,7 +20,6 @@ func _physics_process(delta: float) -> void:
 	
 	if exploding:
 		return
-	velocity = direction * speed
 	rotation = atan2(velocity.y, velocity.x) - PI*0.5
 	var collision = move_and_collide(velocity * delta)
 	

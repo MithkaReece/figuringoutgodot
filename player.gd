@@ -1,5 +1,5 @@
 extends CharacterBody2D
-signal egg_pickup
+
 @onready var spawner: Node2D = $"../Spawner"
 
 var friendlyHealthBarTexture: Texture2D = preload("res://ProgressBarFullFriendly.png")
@@ -31,8 +31,6 @@ var path = []
 var carryingEggType = null
 var carryingEggTimer = null
 
-var potentialEggType = null
-var potentialEggTimer = null
 
 
 var creatureScene = preload("res://beanel.tscn")
@@ -59,14 +57,14 @@ func _process(delta: float) -> void:
 	handleEgg(delta)
 
 func _input(event):
-	if event is InputEventMouseButton and event.pressed && timeTillFireball <= 0.0:
+	if event is InputEventMouseButton and event.pressed && event.button_index == MOUSE_BUTTON_LEFT && timeTillFireball <= 0.0:
 		timeTillFireball = fireballCoolDown
 		var mousePos = get_global_mouse_position()
-		var dir = (mousePos - position).normalized()
+		var dir = (mousePos - position + velocity.normalized()).normalized()
 		var fireball = fireballScene.instantiate();
 		get_tree().root.add_child(fireball)
 		fireball.position = position + 10*dir
-		fireball.direction = dir
+		fireball.velocity = 70 * dir
 		fireball.speed = 70
 		fireball.SetRange(fireballRange)
 
@@ -92,33 +90,20 @@ func _physics_process(delta: float) -> void:
 		var other = collision.get_collider()
 		
 		if other is StaticBody2D and other.is_in_group("Egg"):
-			var menuInstance = eggMenu.instantiate()
-			menuInstance.position = other.position
-			get_tree().current_scene.add_child(menuInstance)
-			menuInstance.connect("egg_option_selected", _on_egg_selected)
-			other.emit_signal("egg_pickup", self)
-			other.queue_free()
-			potentialEggType = other.type
-			potentialEggTimer = other.timeLeftToIncubate
-			canMove = false
+			SignalManager.egg_pickup.emit(other)
+			if carryingEggType:
+				print("Eat")
+			else:
+				carryingEggType = other.type
+				carryingEggTimer = other.timeLeftToIncubate
+				if egg_sprite == null:
+					egg_sprite = eggSpriteScene.instantiate();
+					get_tree().root.add_child(egg_sprite)
 			
-func _on_egg_selected(option):
-	canMove = true
-	match option:
-		"Incubate":
-			carryingEggType = potentialEggType
-			potentialEggType = null
-			carryingEggTimer = potentialEggTimer
-			potentialEggTimer = null
-			if egg_sprite == null:
-				egg_sprite = eggSpriteScene.instantiate();
-				get_tree().root.add_child(egg_sprite)
-		
-			egg_sprite.texture = eggTexture
-			egg_shadow.texture = eggShadowTexture
-			egg_sprite.rotation = 0
-		"Eat":
-			print("Eat")
+				egg_sprite.texture = eggTexture
+				egg_shadow.texture = eggShadowTexture
+				egg_sprite.rotation = 0
+
 		
 func handlePath():
 	var lastPathPosition = path[0]

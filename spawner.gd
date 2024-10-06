@@ -26,6 +26,8 @@ func _ready() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
+	max_creatures = 70 + 50 * player.creatures.size()
+	
 	timeTillSpawn -= delta
 	if timeTillSpawn < 0:
 		timeTillSpawn = spawnInterval
@@ -52,7 +54,7 @@ func spawn_creature():
 func spawn_egg():
 	var egg = egg_scene.instantiate()
 	egg.position = random_spawn_point()
-	egg.connect("egg_pickup", _on_egg_pickup)
+	SignalManager.egg_pickup.connect(_on_egg_pickup)
 	
 	get_tree().root.add_child(egg)
 	eggs.append(egg)
@@ -77,9 +79,11 @@ func random_spawn_point():
 
 func _on_creature_died(creature):
 	creatures.erase(creature)
+	creature.queue_free()
 
 func _on_egg_pickup(egg):
 	eggs.erase(egg)
+	egg.queue_free()
 	
 func Clear():
 	for egg in eggs:
